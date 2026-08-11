@@ -1,27 +1,169 @@
-🎯 Attack Phase 1 — Reconnaissance
+<h2 align="center">🎯 Attack Phase – Reconnaissance & Service Enumeration</h2>
 
-This phase focused on identifying active systems within the lab network and discovering exposed services on the target server. The activity was performed from the Kali Linux attacker machine against the Ubuntu Server hosted inside the VMware NAT environment.
+<p align="justify">
+The first phase of the assessment focused on gathering information about the target environment. Before performing any attack, it was necessary to identify active systems on the network and enumerate the services exposed by the target server. This reconnaissance was carried out from the Kali Linux attacker machine against the Ubuntu Server within the VMware NAT network.
+</p>
+<img width="600" height="800" alt="Reconnaissance" src="https://github.com/user-attachments/assets/0c4cdebe-9419-4a03-a4bf-3c6b57b7f9ec" />
+<h3>🔍 Step 1 – Host Discovery</h3>
 
-🔍 Host Discovery
+<p align="justify">
+The reconnaissance process began with <b>Netdiscover</b>, which uses ARP requests to identify live hosts connected to the local network. Scanning the subnet allowed me to determine which virtual machines were currently active.
+</p>
 
-I first performed network reconnaissance using Netdiscover to identify all live hosts in the 192.168.67.0/24 subnet.
+<p><b>Command Used</b></p>
 
-netdiscover -r 192.168.67.0/24
+<pre><code>netdiscover -r 192.168.67.0/24</code></pre>
 
-The scan revealed multiple active systems, including the target Ubuntu server at 192.168.67.128. This confirmed that the host was reachable and available for further enumeration.
+<p><b>Observation</b></p>
 
-🛰️ Service Enumeration
+<ul>
+<li>Multiple active hosts were discovered on the network.</li>
+<li>The Ubuntu Server was identified with the IP address <b>192.168.67.128</b>.</li>
+<li>This confirmed the target system was reachable and ready for further enumeration.</li>
+</ul>
 
-After identifying the target IP, I executed a full TCP port and service version scan using Nmap.
+<h3>🛰️ Step 2 – Service Enumeration</h3>
 
-nmap -sV -p- 192.168.67.128
+<p align="justify">
+After identifying the target host, an Nmap service version scan was performed to enumerate all open TCP ports and identify the services running on the Ubuntu Server.
+</p>
 
-📌 Key Findings
+<p><b>Command Used</b></p>
 
-Port 22/tcp — OpenSSH 8.9p1
+<pre><code>nmap -sV -p- 192.168.67.128</code></pre>
 
-Port 80/tcp — Apache HTTP Server 2.4.52
+<p><b>Scan Results</b></p>
 
-Operating System — Ubuntu Linux
+<ul>
+<li><b>Port 22/TCP</b> – OpenSSH 8.9p1</li>
+<li><b>Port 80/TCP</b> – Apache HTTP Server 2.4.52</li>
+<li><b>Operating System</b> – Ubuntu Linux</li>
+</ul>
 
-The Nmap scan showed that SSH and HTTP services were publicly accessible on the target server, making them potential entry points for subsequent attack phases such as web enumeration and credential-based attacks.
+<h3>📊 Analysis</h3>
+
+<p align="justify">
+The reconnaissance phase successfully identified the target server and revealed the services exposed to the network. SSH (Port 22) and Apache HTTP (Port 80) were found to be accessible, indicating potential entry points for further security assessment. The collected information forms the foundation for the next stages of the penetration testing process, including web enumeration and authentication testing.
+</p>
+
+<h2>🔎 Investigation Phase</h2>
+
+<p>
+After executing the reconnaissance scan, multiple security events were detected on the monitoring dashboard.
+Both <strong>Suricata IDS</strong> and the <strong>UFW Firewall</strong> generated alerts, indicating that the target
+server was actively monitoring reconnaissance activity.
+</p>
+
+<div align="center">
+  <img width="912" height="798" alt="image" src="https://github.com/user-attachments/assets/68acb5ad-de1b-4f46-8dc3-d84c72fd457e" />
+</div>
+
+<h3>📌 Initial Observations</h3>
+
+<ul>
+  <li>🛡️ <strong>Suricata IDS</strong> detected multiple reconnaissance signatures generated during the Nmap scan.</li>
+  <li>🔥 <strong>UFW Firewall</strong> recorded network activity and blocked connection attempts to multiple ports.</li>
+  <li>📊 The dashboard provides a high-level overview before performing detailed log analysis.</li>
+</ul>
+
+<blockquote>
+<b>Note:</b> Signature-based detection (Suricata) identifies only known attack patterns. Firewall (UFW) logs are equally important because they record all network connection attempts, including events that may not trigger IDS signatures.
+</blockquote>
+
+<p>
+The investigation continues by analyzing both <strong>Suricata IDS logs</strong> and <strong>UFW Firewall logs</strong> to validate the reconnaissance activity and collect evidence.
+</p>
+<h3>🔍 Suricata IDS Investigation (5W's Framework)</h3>
+<h4>👤 1. Who – Who Generated the Alerts?</h4>
+<p>
+The first step of the investigation was to identify <strong>which systems generated the Suricata IDS alerts</strong>. This helps determine whether the activity originated from a legitimate system or a potentially malicious source.
+</p>
+<img width="1602" height="375" alt="image" src="https://github.com/user-attachments/assets/3a1f3a49-e1a3-493c-9cac-060f97ede738" />
+<table>
+<tr>
+<th>Source IP</th>
+<th>Alert Count</th>
+<th>Observation</th>
+</tr>
+
+<tr>
+<td>192.168.67.129</td>
+<td>14</td>
+<td>Kali Linux (Attacker Machine)</td>
+</tr>
+
+<tr>
+<td>192.168.67.128</td>
+<td>11</td>
+<td>Ubuntu Server (Target Server)</td>
+</tr>
+
+</table>
+<h4>❓ 2. What – What Activity Was Performed?</h4>
+<p>
+After identifying the source systems, the next step was to determine <strong>what type of activity triggered the IDS alerts</strong>. The investigation focused on reviewing Suricata signatures and alert categories for each source IP.
+</p>
+<img width="1568" height="634" alt="image" src="https://github.com/user-attachments/assets/81dc2665-3227-423c-ab1a-6a3280351ac0" />
+<h5>🖥️ Analysis – 192.168.67.128 (Ubuntu Server)</h5>
+<ul>
+<li><strong>GPL WEB_SERVER 403 Forbidden</strong> alerts were observed.</li>
+<li>These alerts represent normal HTTP response traffic generated by the Apache web server.</li>
+<li><strong>ET POLICY GNU/Linux APT User-Agent Outbound</strong> alerts were also detected.</li>
+<li>These events were generated during normal Ubuntu package update (APT) operations.</li>
+</ul>
+<p>
+<b>Assessment:</b> The alerts generated by <strong>192.168.67.128</strong> are considered expected and do not indicate malicious activity.
+</p>
+<img width="1837" height="721" alt="image" src="https://github.com/user-attachments/assets/a81a1838-ed70-4222-979f-95214a495898" />
+<h5>🖥️ Analysis – 192.168.67.129 (Kali Linux)</h5>
+
+<ul>
+<li>Multiple <strong>ET SCAN</strong> signatures were detected by Suricata.</li>
+<li>Alerts indicated reconnaissance activity targeting multiple network services.</li>
+<li>The signatures included probes against services such as MySQL (3306), MSSQL (1433), Oracle (1521), PostgreSQL (5432), and VNC.</li>
+<li>The signature <strong>ET SCAN Nmap Scripting Engine User-Agent Detected</strong> confirmed that the activity was generated by an Nmap scan.</li>
+</ul>
+
+<p>
+<b>Assessment:</b> The alerts generated by <strong>192.168.67.129</strong> indicate active reconnaissance and service enumeration against the Ubuntu Server. This behavior is consistent with an automated Nmap scanning activity.
+</p>
+<hr>
+<h4>🕒 3. When — Timeline Analysis</h4>
+<p>
+After identifying <strong>192.168.67.129</strong> as the External IP and
+confirming that the activity consisted of <strong>Nmap reconnaissance</strong>,
+the next step was to establish the exact timeline of the activity.
+</p>
+<h5>🔍 Splunk Investigation</h5>
+<img width="1840" height="400" alt="image" src="https://github.com/user-attachments/assets/b908d52a-8663-4459-a33b-7c0658036cad" />
+<h5>📊 Timeline Findings</h5>
+
+<table>
+  <tr>
+    <th>Investigation Point</th>
+    <th>Finding</th>
+  </tr>
+  <tr>
+    <td>Source IP</td>
+    <td><code>192.168.67.129</code> (Kali Linux)</td>
+  </tr>
+  <tr>
+    <td>Total Suricata Alerts</td>
+    <td><strong>14</strong></td>
+  </tr>
+  <tr>
+    <td>First Detected Activity</td>
+    <td><strong>2026-08-06 23:52:01</strong></td>
+  </tr>
+  <tr>
+    <td>Last Detected Activity</td>
+    <td><strong>2026-08-06 23:53:51</strong></td>
+  </tr>
+  <tr>
+    <td>Activity Duration</td>
+    <td><strong>~1 minute 50 seconds</strong></td>
+  </tr>
+</table>
+<p>
+  <b>Assessment:</b>The activity happened in a short time and generated multiple ET SCAN alerts from the Kali Linux system. This behavior is consistent with an automated Nmap reconnaissance scan.
+</p>
