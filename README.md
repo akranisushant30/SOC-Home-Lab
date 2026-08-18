@@ -272,3 +272,6 @@ threat detection, and incident investigation.
 <li><strong>Log Sources:</strong> Security, System & Sysmon Event Logs</li>
 <li><strong>Purpose:</strong> Endpoint Monitoring & Log Forwarding</li>
 </ul>
+
+<h2>Workflow</h2>
+<img width="800" height="1200" alt="image" src="https://github.com/user-attachments/assets/77715668-f3ec-4bee-ab83-f6270d2e26b6" />
