@@ -249,6 +249,102 @@ Port <strong>80</strong> generated the highest number of alerts with
 ports <strong>1433, 1521, 3306, 5432, 5807, and 5820</strong>.
 </p>
 
+<h4>🧠5. WHY | Intent Analysis</h4>
+
+<p>
+After analyzing the source, alert signatures, timeline, and destination activity,
+the next step was to understand <strong>why this activity occurred</strong>.
+</p>
+
+<p>
+The activity from <code>192.168.67.129</code> was directed toward
+<code>192.168.67.128</code> and involved scanning multiple ports within a short
+period of time. The purpose of this behavior was to identify
+<strong>reachable ports and available network services</strong> on the target system.
+</p>
+
+<p>
+This is a typical <strong>reconnaissance activity</strong>. Before attempting further
+actions against a system, an attacker may first collect information about the
+target and identify possible services that could be investigated further.
+</p>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Analysis Point</th>
+    <th>Finding</th>
+  </tr>
+  <tr>
+    <td>Activity Purpose</td>
+    <td>Discover exposed ports and services</td>
+  </tr>
+  <tr>
+    <td>Behavior Type</td>
+    <td>Network Reconnaissance</td>
+  </tr>
+  <tr>
+    <td>Target</td>
+    <td><code>192.168.67.128</code></td>
+  </tr>
+</table>
+
+<blockquote>
+<strong>🔎 WHY Finding:</strong><br>
+The activity was performed to gather information about the target system
+and identify exposed ports and services that could potentially be used
+for further investigation or attack activity.
+</blockquote>
+
+<hr>
+
+<h4>⚙️6. HOW | Attack Method Analysis</h4>
+
+<p>
+The next step was to determine <strong>how the reconnaissance activity was performed</strong>.
+The source system <code>192.168.67.129</code> was a Kali Linux machine used to perform
+the network scan against the Ubuntu Server.
+</p>
+
+<p>
+The reconnaissance was performed using <strong>Nmap</strong>. The scan checked the
+target for open ports and running services, while Suricata observed the network
+traffic and generated multiple <strong>ET SCAN</strong> alerts.
+</p>
+
+<p>
+The presence of multiple scan-related alerts across different destination ports,
+along with the Nmap-related Suricata detection identified earlier in the investigation,
+supports the use of an <strong>automated network scanning tool</strong>.
+</p>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Attack Method</th>
+    <th>Finding</th>
+  </tr>
+  <tr>
+    <td>Source System</td>
+    <td><code>192.168.67.129</code> — Kali Linux</td>
+  </tr>
+  <tr>
+    <td>Tool Used</td>
+    <td><strong>Nmap</strong></td>
+  </tr>
+  <tr>
+    <td>Method</td>
+    <td>Port Scanning &amp; Service Discovery</td>
+  </tr>
+  <tr>
+    <td>Detection Source</td>
+    <td>Suricata IDS — ET SCAN Alerts</td>
+  </tr>
+</table>
+<blockquote>
+<strong>🔎 HOW Finding:</strong><br>
+The reconnaissance was carried out using <strong>Nmap from the Kali Linux system</strong>.
+The automated scan probed the target for ports and services, generating multiple
+scan-related detections in Suricata.
+</blockquote>
 <h5>🔗 Observed Traffic Direction</h5>
 
 <table border="1" cellpadding="10" cellspacing="0">
@@ -269,9 +365,6 @@ ports <strong>1433, 1521, 3306, 5432, 5807, and 5820</strong>.
     </td>
   </tr>
 </table>
-
-<br>
-
 <blockquote>
 <strong>🔎 L1 Finding:</strong><br>
 All <strong>14 detected alerts</strong> from
