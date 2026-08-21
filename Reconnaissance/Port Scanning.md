@@ -373,3 +373,303 @@ All <strong>14 detected alerts</strong> from
 This confirms <code>192.168.67.128</code> as the target system of the
 reconnaissance activity.
 </blockquote>
+<h3>🔥 UFW Firewall Log Investigation</h3>
+<p>
+After completing the Suricata IDS analysis, I analyzed the UFW firewall logs
+to understand which connection attempts were blocked by the target server
+and to correlate the firewall activity with the IDS detections.
+</p>
+<h4>🔎 Step 1 — Identify Available UFW Actions</h4>
+<p>
+Before analyzing the firewall activity, I first checked which
+<strong>UFW actions</strong> were available in the Splunk dataset.
+This helps determine whether the firewall logs contain
+<strong>BLOCK</strong>, <strong>ALLOW</strong>, or other actions.
+</p>
+<h5>🔍 Splunk Query</h5>
+<img width="1593" height="349" alt="image" src="https://github.com/user-attachments/assets/4b8d1d00-97c8-49b1-9a8a-8f2ce6655806" />
+<h5>📊 Result</h5>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>UFW Action</th>
+    <th>Event Count</th>
+  </tr>
+  <tr>
+    <td><strong>BLOCK</strong></td>
+    <td><strong>15</strong></td>
+  </tr>
+</table>
+<blockquote>
+<strong>Finding:</strong><br>
+The available firewall dataset contains <strong>15 blocked events</strong>.
+These events will now be parsed into structured fields for further investigation.
+</blockquote>
+<h4>⚙️ Step 2 — UFW Log Parsing &amp; Field Extraction</h4>
+<p>
+UFW events were stored as raw firewall logs. Before starting the detailed
+investigation, I parsed the raw events in Splunk and extracted the important
+network fields into a structured format.
+</p>
+<h5>🔧 Splunk Query</h5>
+<img width="1602" height="740" alt="image" src="https://github.com/user-attachments/assets/dc1df6f6-a8ce-4dcb-87dd-9b9fb3c6b830" />
+<h5>📊 Extracted Fields</h5>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Field</th>
+    <th>Purpose</th>
+  </tr>
+  <tr>
+    <td><code>action</code></td>
+    <td>Firewall action taken on the packet</td>
+  </tr>
+  <tr>
+    <td><code>src_ip</code></td>
+    <td>Source IP that generated the traffic</td>
+  </tr>
+  <tr>
+    <td><code>src_port</code></td>
+    <td>Source port used for the connection</td>
+  </tr>
+  <tr>
+    <td><code>dest_ip</code></td>
+    <td>Destination system receiving the traffic</td>
+  </tr>
+  <tr>
+    <td><code>dest_port</code></td>
+    <td>Destination port contacted</td>
+  </tr>
+  <tr>
+    <td><code>protocol</code></td>
+    <td>Network protocol used</td>
+  </tr>
+</table>
+<h4>🔥 Step 3 — Blocked Traffic Analysis</h4>
+<p>
+After parsing the UFW logs, I analyzed the blocked firewall traffic to identify
+the source, destination, protocol, and destination ports involved in the activity.
+</p>
+<h5>🔍 Splunk Query</h5>
+<img width="1587" height="756" alt="image" src="https://github.com/user-attachments/assets/92cc8399-3b93-41f7-889e-2f91cae12942" />
+<h5>📊 Firewall Findings</h5>
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Field</th>
+    <th>Finding</th>
+  </tr>
+  <tr>
+    <td>Source IP</td>
+    <td><code>192.168.67.129</code></td>
+  </tr>
+  <tr>
+    <td>Destination IP</td>
+    <td><code>192.168.67.128</code></td>
+  </tr>
+  <tr>
+    <td>Protocol</td>
+    <td>TCP</td>
+  </tr>
+  <tr>
+    <td>Blocked Events</td>
+    <td>15</td>
+  </tr>
+  <tr>
+    <td>Unique Destination Ports</td>
+    <td>15</td>
+  </tr>
+</table>
+<p>
+This provides additional network evidence showing that the same source
+identified during the Suricata investigation was attempting connections
+to multiple ports on the same target system.
+</p>
+
+<blockquote>
+<strong>Finding:</strong><br>
+UFW blocked <strong>15 TCP connection attempts across 15 different
+destination ports</strong> from <code>192.168.67.129</code> to
+<code>192.168.67.128</code>.
+</blockquote>
+<h4>⏱️ Step 4 — UFW Timeline Analysis</h4>
+
+<p>
+After identifying the blocked connection attempts, I analyzed the UFW event
+timeline to determine when the firewall activity started, when it ended,
+and how long it continued.
+</p>
+
+<h5>🔍 Splunk Query</h5>
+<img width="1589" height="367" alt="image" src="https://github.com/user-attachments/assets/4b8e9a86-1209-447b-8f2b-df533a193b5a" />
+<h5>📊 Timeline Findings</h5>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>First Block</th>
+    <th>Last Block</th>
+    <th>Duration</th>
+    <th>Blocked Events</th>
+  </tr>
+  <tr>
+    <td>2026-08-06 23:52:00</td>
+    <td>2026-08-06 23:53:40</td>
+    <td>100 Seconds</td>
+    <td>15</td>
+  </tr>
+</table>
+<blockquote>
+<strong>Finding:</strong><br>
+The firewall blocked <strong>15 TCP connection attempts within 1 minute
+40 seconds</strong>, all occurring within the same concentrated activity window.
+</blockquote>
+<h4>🔗 Step 5 — Suricata &amp; UFW Timeline Correlation</h4>
+
+<p>
+After completing the Suricata IDS and UFW Firewall investigations, I compared
+the timeline findings from both log sources to determine whether they were
+related to the same reconnaissance activity.
+</p>
+
+<table border="1" cellpadding="8" cellspacing="0" width="100%">
+  <tr>
+    <th>Log Source</th>
+    <th>First Event</th>
+    <th>Last Event</th>
+    <th>Duration</th>
+    <th>Events</th>
+  </tr>
+
+  <tr>
+    <td><strong>Suricata IDS</strong></td>
+    <td>2026-08-06 23:52:01</td>
+    <td>2026-08-06 23:53:51</td>
+    <td>~1 Minute 50 Seconds</td>
+    <td>14 Alerts</td>
+  </tr>
+
+  <tr>
+    <td><strong>UFW Firewall</strong></td>
+    <td>2026-08-06 23:52:00</td>
+    <td>2026-08-06 23:53:40</td>
+    <td>1 Minute 40 Seconds</td>
+    <td>15 Blocked Events</td>
+  </tr>
+</table>
+
+<blockquote>
+<strong>Correlation Finding:</strong><br>
+Suricata and UFW independently observed the same source-to-destination activity
+within nearly the same timeframe, providing supporting evidence of the
+reconnaissance scan.
+</blockquote>
+
+<h2>📋 Final SOC L1 Case Assessment</h2>
+
+<p>
+After completing the Suricata and UFW investigations and correlating the
+available evidence, the case was reviewed to determine the final
+classification, severity, required response, and escalation decision.
+</p>
+
+<table border="1" cellpadding="8" cellspacing="0" width="100%">
+
+  <tr>
+    <th width="25%">Assessment Point</th>
+    <th width="75%">Finding</th>
+  </tr>
+
+  <tr>
+    <td><strong>Alert Classification</strong></td>
+    <td>
+      ✅ <strong>True Positive</strong> — The network scanning activity
+      actually occurred and was confirmed through Suricata and UFW evidence.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>Source Context</strong></td>
+    <td>
+      <code>192.168.67.129</code> — Kali Linux.
+      In a real SOC environment, the source would need to be validated
+      as authorized or unauthorized.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>Target Asset</strong></td>
+    <td>
+      <code>192.168.67.128</code> — Ubuntu Server.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>Observed Activity</strong></td>
+    <td>
+      Network reconnaissance involving port scanning and service discovery.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>Success / Impact</strong></td>
+    <td>
+      No evidence of successful exploitation, credential compromise,
+      persistence, or data exfiltration was identified.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>Scope</strong></td>
+    <td>
+      The observed reconnaissance activity was directed toward a
+      single target system.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>Follow-up Activity</strong></td>
+    <td>
+      No further malicious activity was identified within the scope
+      of this investigation.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>Security Controls</strong></td>
+    <td>
+      Suricata generated <strong>14 scan-related alerts</strong> and
+      UFW recorded <strong>15 blocked TCP connection attempts</strong>.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>Severity</strong></td>
+    <td>
+      🟡 <strong>Medium</strong> — Reconnaissance was confirmed, but
+      no successful compromise or significant impact was identified.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>MITRE ATT&amp;CK</strong></td>
+    <td>
+      <strong>Discovery — T1046: Network Service Discovery</strong>
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>Recommended Action</strong></td>
+    <td>
+      Validate the source, review exposed services and firewall rules,
+      check for follow-up suspicious activity, and continue monitoring.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>Disposition</strong></td>
+    <td>
+      <strong>Escalated to SOC L2</strong><br>
+      Confirmed reconnaissance activity was detected.
+    </td>
+  </tr>
+
+</table>
