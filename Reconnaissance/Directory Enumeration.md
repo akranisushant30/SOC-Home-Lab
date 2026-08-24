@@ -123,3 +123,18 @@ exposed PHP configuration information, while <code>/robots.txt</code> did not
 reveal any additional paths.
 </p>
 <img width="1200" height="800" alt="image" src="https://github.com/user-attachments/assets/741254da-7414-4dc0-9352-b489b5b994af" />
+<hr>
+
+<h2 align="center">🔍 SOC Investigation Phase</h2>
+
+<p align="justify">
+After completing the directory enumeration attack, the activity will now be
+investigated from a <strong>SOC L1 analyst perspective</strong> using the logs
+available in Splunk.
+</p>
+
+<p align="justify">
+The objective is to identify and analyze the suspicious web enumeration activity,
+correlate relevant security evidence, assess its impact, and determine the final
+classification and response.
+</p>
