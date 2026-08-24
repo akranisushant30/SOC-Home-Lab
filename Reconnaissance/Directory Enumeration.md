@@ -149,3 +149,27 @@ further investigation.
 </blockquote>
 
 <h3>🔍 Suricata IDS Investigation — 5W1H Framework</h3>
+<h4>👤 1. WHO — Which Systems Generated the Alerts?</h4>
+<p>
+I first checked the source IP addresses found in the Suricata alerts.
+This helped identify the systems involved in the activity.
+</p>
+<img width="1586" height="318" alt="image" src="https://github.com/user-attachments/assets/9baab831-bf3f-4db5-bf1c-7f2707d528ad" />
+
+<h5>📊 Findings</h5>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Source IP</th>
+    <th>Alert Count</th>
+  </tr>
+  <tr>
+    <td><code>192.168.67.128</code></td>
+    <td>164</td>
+  </tr>
+
+  <tr>
+    <td><code>192.168.67.129</code></td>
+    <td>94</td>
+  </tr>
+</table>
