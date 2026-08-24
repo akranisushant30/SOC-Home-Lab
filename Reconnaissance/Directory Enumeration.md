@@ -126,15 +126,26 @@ reveal any additional paths.
 <hr>
 
 <h2 align="center">🔍 SOC Investigation Phase</h2>
-
 <p align="justify">
-After completing the directory enumeration attack, the activity will now be
-investigated from a <strong>SOC L1 analyst perspective</strong> using the logs
-available in Splunk.
+During routine monitoring of the <strong>SOC L1 Overview Dashboard</strong>,
+multiple alerts were observed in the <strong>Suricata Alert Types</strong> panel.
+The alerts indicated potentially suspicious network activity that required
+further investigation.
 </p>
+<img width="1200" height="800" alt="image" src="https://github.com/user-attachments/assets/3d48104e-3305-4655-b404-ed12fea92cf0" />
+<h3>📌 Initial Observation</h3>
 
-<p align="justify">
-The objective is to identify and analyze the suspicious web enumeration activity,
-correlate relevant security evidence, assess its impact, and determine the final
-classification and response.
-</p>
+<ul>
+  <li>Multiple Suricata alert signatures were observed on the dashboard.</li>
+  <li>Some alert types appeared in higher volumes than others.</li>
+  <li>The source, destination, activity type, and timeline were not yet confirmed.</li>
+  <li>Detailed log analysis was required to validate the activity.</li>
+</ul>
+
+<blockquote>
+  <strong>Initial Triage Decision:</strong><br>
+  The Suricata alerts require further investigation to determine whether they
+  represent directory enumeration, normal network traffic, or another type of activity.
+</blockquote>
+
+<h3>🔍 Suricata IDS Investigation — 5W1H Framework</h3>
