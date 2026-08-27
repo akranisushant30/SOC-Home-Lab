@@ -173,3 +173,51 @@ This helped identify the systems involved in the activity.
     <td>94</td>
   </tr>
 </table>
+<blockquote>
+  <strong>Finding:</strong><br>
+  Suricata recorded <strong>258 alerts</strong> from two IP addresses.
+  More analysis is needed to understand what type of activity each system generated.
+</blockquote>
+<h4>❓ 2. What – What Activity Was Performed?</h4>
+<p>After identifying the source systems, the next step was to determine what type of activity triggered the IDS alerts. The investigation focused on reviewing Suricata signatures and alert categories for each source IP.
+</p>
+<img width="1595" height="705" alt="image" src="https://github.com/user-attachments/assets/62ee1cb9-1e64-4166-bc04-ca11755dab39" />
+
+<h5>🖥️ Analysis — 192.168.67.128 (Ubuntu Server)</h5>
+<p>
+I first reviewed the alerts where <code>192.168.67.128</code> appeared as
+the source IP.
+</p>
+<ul>
+  <li>A total of <strong>164 alerts</strong> were found.</li>
+  <li>The traffic was sent from the Ubuntu Server to <code>192.168.67.129</code>.</li>
+  <li><strong>GPL WEB_SERVER 403 Forbidden</strong> alerts were observed.</li>
+  <li><strong>SURICATA HTTP unable to match response to request</strong> alerts were also observed.</li>
+  <li>The events mainly show HTTP response traffic from the web server.</li>
+</ul>
+
+<p>
+<strong>Finding:</strong> The alerts from <code>192.168.67.128</code> were
+related to web server responses. They do not identify the system that started
+the activity.
+</p>
+<h5>🖥️ Analysis — 192.168.67.129 (Kali Linux)</h5>
+<p>
+Next, I reviewed the alerts where <code>192.168.67.129</code> appeared as
+the source IP.
+</p>
+<img width="1598" height="695" alt="image" src="https://github.com/user-attachments/assets/7e9b78a2-cd5e-4d37-874d-6ccc8b86e864" />
+
+<ul>
+  <li>A total of <strong>94 alerts</strong> were found.</li>
+  <li>The requests were sent to <code>192.168.67.128</code> on port <code>8080</code>.</li>
+  <li>Requests for files such as <code>.bash_history</code>, <code>.htpasswd</code> and <code>.htaccess</code> were detected.</li>
+  <li>Requests for paths such as <code>/~root</code>, <code>global.asa</code> and <code>iisadmin</code> were also detected.</li>
+  <li>The alerts included attempted information leak and web application attack categories.</li>
+</ul>
+
+<p>
+<strong>Finding:</strong> The activity from <code>192.168.67.129</code>
+targeted many web files and directories on <code>192.168.67.128:8080</code>.
+This behavior is consistent with automated directory and file enumeration.
+</p>
