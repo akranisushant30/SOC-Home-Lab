@@ -221,3 +221,82 @@ the source IP.
 targeted many web files and directories on <code>192.168.67.128:8080</code>.
 This behavior is consistent with automated directory and file enumeration.
 </p>
+
+<h6>📊 Alert Signature Summary</h6>
+<p>
+The 94 alerts contained <strong>8 unique signatures</strong>.
+Most of the events were TCP stream warnings, while 9 alerts were related
+to suspicious web file and directory requests.
+</p>
+<img width="1280" height="480" alt="image" src="https://github.com/user-attachments/assets/05127a75-283b-4b00-820e-310ce4e8a071" />
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Alert Type</th>
+    <th>Alert Count</th>
+    <th>Finding</th>
+  </tr>
+
+  <tr>
+    <td>TCP stream warning</td>
+    <td>85</td>
+    <td>Protocol-related events</td>
+  </tr>
+
+  <tr>
+    <td>Suspicious web requests</td>
+    <td>9</td>
+    <td>Requests for sensitive files and directories</td>
+  </tr>
+</table>
+
+<p>
+<strong>Finding:</strong> Suricata detected requests for files and paths such
+as <code>.bash_history</code>, <code>.htaccess</code>, <code>.htpasswd</code>,
+<code>global.asa</code>, <code>/~root</code>, and <code>iisadmin</code>.
+These requests show web directory and file enumeration activity from
+<code>192.168.67.129</code>.
+</p>
+
+<h4>🕒 3. WHEN — Timeline Analysis</h4>
+
+<p>
+I checked the timeline of the 9 alerts related to suspicious web file
+and directory requests.
+</p>
+<img width="1839" height="464" alt="image" src="https://github.com/user-attachments/assets/596ed29e-d99d-4310-91b2-7e3d1ca3d86e" />
+
+<h5>📊 Timeline Findings</h5>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Investigation Point</th>
+    <th>Finding</th>
+  </tr>
+
+  <tr>
+    <td>First Alert</td>
+    <td>2026-08-24 16:49:28.964</td>
+  </tr>
+
+  <tr>
+    <td>Last Alert</td>
+    <td>2026-08-24 16:49:30.066</td>
+  </tr>
+
+  <tr>
+    <td>Duration</td>
+    <td>Approximately 1.10 seconds</td>
+  </tr>
+
+  <tr>
+    <td>Relevant Alerts</td>
+    <td>9</td>
+  </tr>
+</table>
+
+<p>
+<strong>Finding:</strong> All 9 relevant alerts were generated within
+approximately 1.10 seconds. The short time and repeated web requests support
+automated directory and file enumeration activity.
+</p>
