@@ -300,3 +300,31 @@ and directory requests.
 approximately 1.10 seconds. The short time and repeated web requests support
 automated directory and file enumeration activity.
 </p>
+<h4>🎯 4. WHERE — Target Analysis</h4>
+
+<p>
+I checked the destination IP and port linked to the 9 relevant alerts.
+</p>
+<img width="1594" height="334" alt="image" src="https://github.com/user-attachments/assets/787c058a-54ea-4caf-ba1c-f3e129b85630" />
+
+<h5>📊 Target Findings</h5>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Destination IP</th>
+    <th>Destination Port</th>
+    <th>Alert Count</th>
+  </tr>
+
+  <tr>
+    <td><code>192.168.67.128</code></td>
+    <td><code>8080</code></td>
+    <td>9</td>
+  </tr>
+</table>
+
+<p>
+<strong>Finding:</strong> All 9 relevant alerts were directed toward
+<code>192.168.67.128</code> on port <code>8080</code>. This confirms that
+the web application running on the Ubuntu Server was the target.
+</p>
