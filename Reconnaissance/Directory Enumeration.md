@@ -328,3 +328,58 @@ I checked the destination IP and port linked to the 9 relevant alerts.
 <code>192.168.67.128</code> on port <code>8080</code>. This confirms that
 the web application running on the Ubuntu Server was the target.
 </p>
+<h4>🧠 5. WHY — Why Was This Activity Performed?</h4>
+
+<p>
+I reviewed the requested resources and the timing of the alerts to understand
+the likely purpose of the activity.
+</p>
+
+<ul>
+  <li>The source requested several hidden and sensitive web resources.</li>
+  <li>All 9 relevant alerts appeared within approximately 1.10 seconds.</li>
+  <li>The requests followed an automated pattern.</li>
+</ul>
+
+<p>
+<strong>Finding:</strong> The likely purpose was to discover hidden files,
+directories, and sensitive resources on the web server. This activity is
+consistent with web reconnaissance and directory enumeration.
+</p>
+<h4>⚙️ 6. HOW — How Was the Activity Performed?</h4>
+
+<p>
+I checked the HTTP method, requested URLs, and User-Agent linked to the
+relevant alerts.
+</p>
+<img width="1582" height="566" alt="image" src="https://github.com/user-attachments/assets/5ff8e961-ecac-490d-9bcd-c25d820de20d" />
+
+<h5>📊 Findings</h5>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Field</th>
+    <th>Finding</th>
+  </tr>
+
+  <tr>
+    <td>HTTP Method</td>
+    <td><code>GET</code></td>
+  </tr>
+
+  <tr>
+    <td>User-Agent</td>
+    <td><code>gobuster/3.8.2</code></td>
+  </tr>
+
+  <tr>
+    <td>Method Used</td>
+    <td>Automated directory and file enumeration</td>
+  </tr>
+</table>
+
+<p>
+<strong>Finding:</strong> The User-Agent identified the tool as
+<strong>Gobuster version 3.8.2</strong>. It used automated GET requests to
+search for files and directories on the target web server.
+</p>
