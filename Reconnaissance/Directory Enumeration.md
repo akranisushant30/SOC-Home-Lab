@@ -383,3 +383,37 @@ relevant alerts.
 <strong>Gobuster version 3.8.2</strong>. It used automated GET requests to
 search for files and directories on the target web server.
 </p>
+<h3>🌐 DVWA Web Log Investigation</h3>
+
+<p>
+After completing the Suricata investigation, I checked the available log
+sources in Splunk to find the web server logs related to the activity.
+</p>
+
+<h4>🔎 Step 1 — Identify the Web Log Source</h4>
+<img width="1588" height="202" alt="image" src="https://github.com/user-attachments/assets/fe4dee50-c572-4224-b945-e3d39ca3402b" />
+
+<h5>📊 Findings</h5>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Index</th>
+    <th>Sourcetype</th>
+    <th>Log Source</th>
+    <th>Event Count</th>
+  </tr>
+
+  <tr>
+    <td><code>soc_web</code></td>
+    <td><code>dvwa</code></td>
+    <td>DVWA Docker container logs</td>
+    <td>4,702</td>
+  </tr>
+</table>
+
+<blockquote>
+  <strong>Finding:</strong><br>
+  DVWA web logs were available in the <code>soc_web</code> index.
+  These logs will be analyzed to check the requested URLs and the HTTP
+  responses returned by the web application.
+</blockquote>
