@@ -391,7 +391,7 @@ sources in Splunk to find the web server logs related to the activity.
 </p>
 
 <h4>🔎 Step 1 — Identify the Web Log Source</h4>
-<img width="1588" height="202" alt="image" src="https://github.com/user-attachments/assets/fe4dee50-c572-4224-b945-e3d39ca3402b" />
+<img width="1839" height="355" alt="image" src="https://github.com/user-attachments/assets/0036cf4f-a30c-4490-94a3-a2df215dbc87" />
 
 <h5>📊 Findings</h5>
 
