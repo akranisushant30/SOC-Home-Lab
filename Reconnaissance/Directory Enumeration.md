@@ -417,3 +417,43 @@ sources in Splunk to find the web server logs related to the activity.
   These logs will be analyzed to check the requested URLs and the HTTP
   responses returned by the web application.
 </blockquote>
+<h3>🔎 Step 2 — Parse and Summarize Web Logs</h3>
+
+<p>
+After identifying the DVWA log source, I extracted the important fields from
+the raw web logs. This made the HTTP activity easier to review and analyze.
+</p>
+
+<h4>2.1 — Web Log Field Extraction</h4>
+
+<p>The following fields were extracted:</p>
+
+<ul>
+  <li><strong>Web Time:</strong> Actual request time recorded by the web server</li>
+  <li><strong>Client IP:</strong> IP address that sent the request</li>
+  <li><strong>HTTP Method:</strong> Request method such as GET or POST</li>
+  <li><strong>URL:</strong> Requested web resource</li>
+  <li><strong>Status Code:</strong> Response returned by the server</li>
+  <li><strong>User-Agent:</strong> Tool or client used to send the request</li>
+</ul>
+<img width="1278" height="645" alt="image" src="https://github.com/user-attachments/assets/f017da13-aba3-4830-931c-46ffad747f2c" />
+<h4>2.2 — User-Agent and HTTP Status Summary</h4>
+
+<p>
+The field-extraction search returned 4,650 events. Instead of reviewing every
+request individually, I grouped the events by User-Agent and HTTP status code.
+I also counted the total requests and unique requested URLs.
+</p>
+<img width="1278" height="542" alt="image" src="https://github.com/user-attachments/assets/45f71e56-183c-4982-8803-e730711a56f0" />
+<p>
+The <code>count</code> command calculated the total requests, while
+<code>dc(url)</code> counted the distinct URLs in each group.
+</p>
+
+<blockquote>
+  <strong>Finding:</strong><br>
+  The web logs contained activity from Gobuster, curl and an internal Apache
+  connection. Most Gobuster requests returned <code>404 Not Found</code>.
+  However, 13 unique Gobuster URLs returned non-404 responses and required
+  further investigation.
+</blockquote>
