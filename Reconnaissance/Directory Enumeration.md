@@ -407,7 +407,7 @@ sources in Splunk to find the web server logs related to the activity.
     <td><code>soc_web</code></td>
     <td><code>dvwa</code></td>
     <td>DVWA Docker container logs</td>
-    <td>4,702</td>
+    <td>4,732</td>
   </tr>
 </table>
 
