@@ -621,3 +621,77 @@ chronologically to reconstruct the activity sequence.
   follow-up activity after the directory enumeration. The next step is to
   determine whether the successful responses exposed sensitive information.
 </blockquote>
+<h3>🧾 Step 6 — Context and Authorization Validation</h3>
+
+<p>
+After confirming the directory-enumeration activity and the follow-up access,
+I checked the source and target context. This step helps determine whether the
+activity was authorized security testing or potentially malicious activity.
+</p>
+
+<h4>🖥️ Lab Context</h4>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Field</th>
+    <th>Validated Information</th>
+  </tr>
+
+  <tr>
+    <td>Source IP</td>
+    <td><code>192.168.67.129</code></td>
+  </tr>
+
+  <tr>
+    <td>Source System</td>
+    <td>Kali Linux security-testing machine</td>
+  </tr>
+
+  <tr>
+    <td>Target IP</td>
+    <td><code>192.168.67.128</code></td>
+  </tr>
+
+  <tr>
+    <td>Target Application</td>
+    <td>DVWA web application running in the home lab</td>
+  </tr>
+
+  <tr>
+    <td>Observed Tools</td>
+    <td><code>gobuster/3.8.2</code> and <code>curl/8.18.0</code></td>
+  </tr>
+
+  <tr>
+    <td>Activity</td>
+    <td>Directory enumeration followed by requests to discovered resources</td>
+  </tr>
+
+  <tr>
+    <td>Authorization</td>
+    <td>Authorized home-lab security test</td>
+  </tr>
+</table>
+
+<h4>🧠 SOC L1 Assessment</h4>
+
+<p>
+The activity was genuine and the security detection was working correctly.
+However, the source system was a known Kali Linux machine used for an
+authorized security test against the DVWA lab server.
+</p>
+
+<blockquote>
+  <strong>Finding:</strong><br>
+  The source and target context confirmed that the observed directory
+  enumeration was part of an authorized home-lab security test. The activity
+  was real and therefore was not a false detection. The final alert
+  classification and severity will be determined in the next step.
+</blockquote>
+
+<p>
+  <strong>Real SOC note:</strong> An analyst must not identify activity as
+  authorized based only on the tool name or source IP. Authorization should
+  be verified through an approved scanner list, change ticket, testing
+  schedule or confirmation from the asset owner.
+</p>
