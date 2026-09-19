@@ -457,3 +457,66 @@ The <code>count</code> command calculated the total requests, while
   However, 13 unique Gobuster URLs returned non-404 responses and required
   further investigation.
 </blockquote>
+<h3>🌐 Step 3 — Interesting Web Resource Analysis</h3>
+
+<p>
+The web-log summary showed thousands of <code>404 Not Found</code> responses.
+Reviewing every failed URL was unnecessary. Therefore, I filtered the results
+to examine the non-404 resources requested by Gobuster and curl.
+</p>
+
+<h4>🔍 Investigation Query</h4>
+
+<pre><code>index=soc_web sourcetype=dvwa
+| spath
+| rex field=log "^(?&lt;client_ip&gt;\d+(?:\.\d+){3})"
+| rex field=log "\[(?&lt;web_time&gt;[^\]]+)\]"
+| rex field=log "\"(?&lt;http_method&gt;GET|POST|HEAD|PUT|DELETE|OPTIONS)\s+(?&lt;url&gt;\S+)\s+HTTP/[^\"]+\"\s+(?&lt;status_code&gt;\d{3})"
+| rex field=log "HTTP/[^\"]+\"\s+\d{3}\s+\d+\s+\"[^\"]*\"\s+\"(?&lt;user_agent&gt;[^\"]+)\""
+| where isnotnull(http_method)
+| where user_agent IN ("gobuster/3.8.2", "curl/8.18.0")
+    AND status_code!="404"
+| stats count AS request_count BY user_agent, http_method, url, status_code
+| sort user_agent, status_code, url
+</code></pre>
+
+<p>
+This search removed the unsuccessful <code>404</code> requests and displayed
+the HTTP method, requested URL, response status and request count for the
+Gobuster and curl User-Agents.
+</p>
+<img width="1282" height="603" alt="image" src="https://github.com/user-attachments/assets/cc364241-3518-48d2-b37a-450632c6240c" />
+
+<h4>📊 Analysis</h4>
+
+<ul>
+  <li>
+    Gobuster identified <strong>13 unique non-404 web resources</strong>.
+  </li>
+  <li>
+    Three resources returned <code>200 OK</code> and were directly accessible.
+  </li>
+  <li>
+    Six resources returned <code>301</code> or <code>302</code> redirects.
+  </li>
+  <li>
+    Four protected resources returned <code>403 Forbidden</code>.
+  </li>
+  <li>
+    The <code>/php.ini</code> and <code>/robots.txt</code> resources were
+    requested by both Gobuster and curl.
+  </li>
+  <li>
+    Curl also used the <code>HEAD</code> method to check the root URL headers.
+  </li>
+</ul>
+
+<blockquote>
+  <strong>Finding:</strong><br>
+  The directory enumeration successfully discovered several valid web
+  resources. The <code>/php.ini</code> resource was considered the
+  highest-priority finding because it returned <code>200 OK</code> and may
+  contain sensitive PHP configuration information. However, the response
+  status alone does not confirm what information was exposed. Further
+  timeline correlation and impact validation are required.
+</blockquote>
