@@ -688,3 +688,57 @@ authorized security test against the DVWA lab server.
   was found for the incident period. The directory enumeration and subsequent
   curl requests were therefore treated as unauthorized and suspicious.
 </blockquote>
+<h3>🚨 Step 8 — L2 Escalation</h3>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Source IP</th>
+    <td><code>192.168.67.129</code></td>
+  </tr>
+  <tr>
+    <th>Target</th>
+    <td><code>192.168.67.128:8080</code></td>
+  </tr>
+  <tr>
+    <th>Activity</th>
+    <td>Directory Enumeration</td>
+  </tr>
+  <tr>
+    <th>Tool</th>
+    <td>Gobuster and curl</td>
+  </tr>
+  <tr>
+    <th>Classification</th>
+    <td><strong>True Positive</strong></td>
+  </tr>
+  <tr>
+    <th>Severity</th>
+    <td><strong>Medium</strong></td>
+  </tr>
+  <tr>
+    <th>MITRE ATT&amp;CK</th>
+    <td><code>T1595 — Active Scanning</code></td>
+  </tr>
+  <tr>
+    <th>Status</th>
+    <td>Escalated to L2</td>
+  </tr>
+</table>
+
+<h4>Escalation Summary</h4>
+
+<p>
+Gobuster enumeration and follow-up curl activity were confirmed from
+<code>192.168.67.129</code>. The source successfully accessed
+<code>/php.ini</code> and <code>/robots.txt</code>. The
+<code>/php.ini</code> response returned <code>200 OK</code> with 351 bytes,
+but the response content was not available in the L1 logs.
+</p>
+
+<h4>Suggested L2 Checks</h4>
+
+<ul>
+  <li>Validate the content returned by <code>/php.ini</code>.</li>
+  <li>Check the source system for additional suspicious activity.</li>
+  <li>Confirm whether any sensitive information was exposed.</li>
+</ul>
