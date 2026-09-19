@@ -520,3 +520,104 @@ Gobuster and curl User-Agents.
   status alone does not confirm what information was exposed. Further
   timeline correlation and impact validation are required.
 </blockquote>
+<h3>🕒 Step 4 — Timeline Correlation and Follow-up Activity</h3>
+
+<p>
+The previous analysis showed that <code>/php.ini</code> and
+<code>/robots.txt</code> were requested by both Gobuster and curl.
+I reviewed the original web timestamps to determine the order of these
+requests and confirm whether curl was used after the enumeration.
+</p>
+
+<h4>🔍 Timeline Query</h4>
+
+<pre><code>| where client_ip="192.168.67.129"
+    AND user_agent IN ("gobuster/3.8.2", "curl/8.18.0")
+    AND url IN ("/php.ini", "/robots.txt", "/")
+| eval event_epoch=strptime(web_time,"%d/%b/%Y:%H:%M:%S %z")
+| sort event_epoch
+| table web_time, client_ip, user_agent, http_method, url, status_code
+</code></pre>
+
+<p>
+The <code>web_time</code> field was used because it contains the actual
+request time recorded by the web server. The results were arranged
+chronologically to reconstruct the activity sequence.
+</p>
+<img width="1290" height="429" alt="image" src="https://github.com/user-attachments/assets/7e6243c5-0fe6-4a23-9aed-1e5ede0ebd73" />
+
+<h4>📅 Current Incident Timeline</h4>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Web Time (UTC)</th>
+    <th>User-Agent</th>
+    <th>Method</th>
+    <th>URL</th>
+    <th>Status</th>
+    <th>Observation</th>
+  </tr>
+
+  <tr>
+    <td><code>24/Aug/2026 11:17:31</code></td>
+    <td><code>curl/8.18.0</code></td>
+    <td><code>HEAD</code></td>
+    <td><code>/</code></td>
+    <td><code>302</code></td>
+    <td>The root URL and its response headers were checked before the scan.</td>
+  </tr>
+
+  <tr>
+    <td><code>24/Aug/2026 11:19:28</code></td>
+    <td><code>gobuster/3.8.2</code></td>
+    <td><code>GET</code></td>
+    <td><code>/</code></td>
+    <td><code>302</code></td>
+    <td>Gobuster enumeration activity began.</td>
+  </tr>
+
+  <tr>
+    <td><code>24/Aug/2026 11:19:30</code></td>
+    <td><code>gobuster/3.8.2</code></td>
+    <td><code>GET</code></td>
+    <td><code>/php.ini</code></td>
+    <td><code>200</code></td>
+    <td>The PHP configuration resource was discovered.</td>
+  </tr>
+
+  <tr>
+    <td><code>24/Aug/2026 11:19:30</code></td>
+    <td><code>gobuster/3.8.2</code></td>
+    <td><code>GET</code></td>
+    <td><code>/robots.txt</code></td>
+    <td><code>200</code></td>
+    <td>The robots file was discovered.</td>
+  </tr>
+
+  <tr>
+    <td><code>24/Aug/2026 11:20:33</code></td>
+    <td><code>curl/8.18.0</code></td>
+    <td><code>GET</code></td>
+    <td><code>/php.ini</code></td>
+    <td><code>200</code></td>
+    <td>Curl accessed the resource 1 minute and 3 seconds after discovery.</td>
+  </tr>
+
+  <tr>
+    <td><code>24/Aug/2026 11:23:32</code></td>
+    <td><code>curl/8.18.0</code></td>
+    <td><code>GET</code></td>
+    <td><code>/robots.txt</code></td>
+    <td><code>200</code></td>
+    <td>Curl accessed the resource 4 minutes and 2 seconds after discovery.</td>
+  </tr>
+</table>
+
+<blockquote>
+  <strong>Finding:</strong><br>
+  The source IP <code>192.168.67.129</code> used Gobuster to discover
+  <code>/php.ini</code> and <code>/robots.txt</code>. The same source then
+  accessed both resources using curl within a few minutes. This confirms
+  follow-up activity after the directory enumeration. The next step is to
+  determine whether the successful responses exposed sensitive information.
+</blockquote>
