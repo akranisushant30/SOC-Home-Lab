@@ -683,15 +683,8 @@ authorized security test against the DVWA lab server.
 
 <blockquote>
   <strong>Finding:</strong><br>
-  The source and target context confirmed that the observed directory
-  enumeration was part of an authorized home-lab security test. The activity
-  was real and therefore was not a false detection. The final alert
-  classification and severity will be determined in the next step.
+  The source IP <code>192.168.67.129</code> was not identified as an approved
+  vulnerability scanner, and no authorized security test or change activity
+  was found for the incident period. The directory enumeration and subsequent
+  curl requests were therefore treated as unauthorized and suspicious.
 </blockquote>
-
-<p>
-  <strong>Real SOC note:</strong> An analyst must not identify activity as
-  authorized based only on the tool name or source IP. Authorization should
-  be verified through an approved scanner list, change ticket, testing
-  schedule or confirmation from the asset owner.
-</p>
