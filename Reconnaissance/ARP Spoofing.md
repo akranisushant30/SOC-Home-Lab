@@ -37,7 +37,7 @@ normal connectivity, web service and monitoring tools in the lab.
     <td><code>00:0c:29:b3:d8:ab</code></td>
   </tr>
 </table>
-<img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/d994b4db-92b0-4cb9-9127-95f2d371c4b9" />
+<img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/c07c4931-8254-40cb-b770-9c69a1db70ab" />
 <h2>⚔️ Attack Phase — ARP Spoofing / MITM</h2>
 
 <p>
