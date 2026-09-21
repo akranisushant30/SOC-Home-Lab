@@ -69,7 +69,11 @@ After confirming the ARP table changes, I tested whether the Ubuntu GUI could
 still communicate with the Ubuntu Server through Kali.
 </p>
 
-<strong>Run on Ubuntu GUI: ping -c 4 192.168.67.128</strong>
+<strong>Run on Ubuntu GUI: </strong>
+
+```text
+ping -c 4 192.168.67.128
+```
 <img width="781" height="447" alt="image" src="https://github.com/user-attachments/assets/e50752bf-4805-4d94-be7b-0458cfaab363" />
 <h3>🌐 Step 4 — Generate HTTP Traffic</h3>
 
@@ -77,6 +81,28 @@ still communicate with the Ubuntu Server through Kali.
 To generate application traffic during the MITM session, an HTTP request was
 sent from the Ubuntu GUI to DVWA.
 </p>
-<strong>Run on Ubuntu GUI: curl -v --max-time 5 http://192.168.67.128/dvwa/ -o /dev/null</strong>
-<img width="1342" height="555" alt="image" src="https://github.com/user-attachments/assets/8fd26a9a-4348-4daa-b825-4687bc4aef98" />
+<strong>Run on Ubuntu GUI: </strong>
 
+```text 
+curl -v --max-time 5 http://192.168.67.128/dvwa/ -o /dev/null
+```
+<img width="1342" height="555" alt="image" src="https://github.com/user-attachments/assets/8fd26a9a-4348-4daa-b825-4687bc4aef98" />
+<blockquote>
+  <strong>Finding:</strong><br>
+  The Ubuntu GUI successfully accessed DVWA over unencrypted HTTP while the
+  MITM session was active. The request and server response were generated for
+  packet-capture verification.
+</blockquote>
+<h5>🔍 Wireshark Verification</h5>
+
+```text
+http && ip.addr == 192.168.67.130 && ip.addr == 192.168.67.128
+```
+<img width="1357" height="517" alt="image" src="https://github.com/user-attachments/assets/1b978c6e-4eb2-4213-b407-aaa51255ba87" />
+
+<blockquote>
+  <strong>Finding:</strong><br>
+  Kali Wireshark observed the <code>GET /dvwa/</code> request and
+  <code>302 Found</code> response, confirming that the HTTP traffic passed
+  through Kali during the lab session.
+</blockquote>
