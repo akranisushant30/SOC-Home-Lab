@@ -106,3 +106,119 @@ http && ip.addr == 192.168.67.130 && ip.addr == 192.168.67.128
   <code>302 Found</code> response, confirming that the HTTP traffic passed
   through Kali during the lab session.
 </blockquote>
+<hr>
+<h2>🔎 Investigation Phase</h2>
+<p>
+After completing the ARP spoofing / MITM simulation, I reviewed the SOC dashboard
+to identify the security events generated during the activity.
+</p>
+
+<p>
+Suricata IDS recorded network alerts during the test period, while no UFW firewall
+events were observed. Since ARP spoofing operates at the local network layer,
+packet-level evidence is also important for validating the activity.
+</p>
+<img width="1839" height="723" alt="image" src="https://github.com/user-attachments/assets/06c605b7-7516-44a3-a144-1927841d6de5" />
+
+<h3>📌 Initial Observations</h3>
+
+<ul>
+  <li>🛡️ <strong>Suricata IDS</strong> generated multiple <code>GPL ICMP_INFO PING *NIX</code> alerts.</li>
+  <li>🌐 <strong>DVWA web activity</strong> was available during the same investigation period.</li>
+  <li>🔥 <strong>UFW Firewall</strong> did not record any related events.</li>
+  <li>📦 Packet-level evidence will be reviewed to validate the ARP spoofing / MITM activity.</li>
+</ul>
+
+<blockquote>
+<b>Note:</b> ARP spoofing is a Layer 2 network activity, so firewall logs may not
+directly record the poisoning activity. IDS alerts and packet captures are more
+useful for validating this type of incident.
+</blockquote>
+
+<h3>🚨 Step 1 — Alert Triage & Scope</h3>
+
+<p>
+The first step of the investigation was to review the Suricata alerts and understand
+what activity was detected. Before checking deeper logs or packet captures, I first
+identified the source, destination, protocol, alert signature and number of events.
+This helped define the initial scope of the incident.
+</p>
+
+
+<h4>1. Initial Alert Summary</h4>
+
+<p>
+I first grouped the Suricata alerts by source IP, destination IP, protocol and
+alert signature. This gave a quick overview of the main activity detected during
+the lab session.
+</p>
+
+<pre><code>index=soc_network sourcetype=suricata event_type=alert
+| stats count BY src_ip dest_ip proto alert.signature
+| sort - count
+</code></pre>
+
+<img width="1287" height="371" alt="image" src="https://github.com/user-attachments/assets/ad1fc724-5a85-42e3-b1a2-64ba62ac7d55" />
+<blockquote>
+<strong>Finding:</strong><br>
+Suricata detected 22 ICMP ping alerts from
+<code>192.168.67.130</code> to <code>192.168.67.128</code>.
+This confirmed that repeated ICMP communication was present between the two systems.
+</blockquote>
+
+<h4>2. Timeline & Duration</h4>
+
+<p>
+After identifying the alert, I checked when the activity started and ended.
+This helps determine the incident time window and shows whether the activity
+was a short burst or continued over a longer period.
+</p>
+
+<pre><code>index=soc_network sourcetype=suricata event_type=alert
+src_ip="192.168.67.130" dest_ip="192.168.67.128"
+"alert.signature"="GPL ICMP_INFO PING *NIX"
+| stats count AS alert_count
+        earliest(_time) AS first_seen
+        latest(_time) AS last_seen
+| eval duration_minutes=round((last_seen-first_seen)/60,2)
+| convert ctime(first_seen) ctime(last_seen)
+</code></pre>
+<img width="1282" height="486" alt="image" src="https://github.com/user-attachments/assets/fc868ece-c6ee-4ceb-95e9-2e51d952c579" />
+<blockquote>
+<strong>Finding:</strong><br>
+The 22 ICMP alerts were observed across an approximately
+<strong>22.61-minute</strong> time window.
+</blockquote>
+
+<h4>3. Individual Alert Review</h4>
+
+<p>
+Finally, I reviewed the individual Suricata events in chronological order.
+This was done to verify whether the same source, destination, protocol and
+signature were repeated throughout the alert window and to understand the
+event pattern before moving to deeper investigation.
+</p>
+
+<pre><code>index=soc_network sourcetype=suricata event_type=alert
+src_ip="192.168.67.130" dest_ip="192.168.67.128"
+"alert.signature"="GPL ICMP_INFO PING *NIX"
+| table _time src_ip dest_ip proto alert.signature
+| sort _time
+</code></pre>
+<img width="1280" height="482" alt="image" src="https://github.com/user-attachments/assets/b04e4531-7e3e-4adc-b616-52ef9f2418a9" />
+
+<p>
+The individual events showed the same source IP, destination IP, protocol and
+alert signature at multiple timestamps during the observed activity window.
+</p>
+
+<blockquote>
+<strong>🔎 Step 1 Finding:</strong><br>
+The initial triage identified 22 ICMP alerts from
+<code>192.168.67.130</code> to <code>192.168.67.128</code>
+over approximately <strong>22.61 minutes</strong>.
+The alerts confirm repeated ICMP communication between the two systems.
+Further log and packet analysis is required to determine whether this activity
+is related to the ARP spoofing / MITM simulation.
+</blockquote>
+
