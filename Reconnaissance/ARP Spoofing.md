@@ -218,4 +218,53 @@ The alerts confirm repeated ICMP communication between the two systems.
 Further log and packet analysis is required to determine whether this activity
 is related to the ARP spoofing / MITM simulation.
 </blockquote>
+<h3>🔎 Step 2 — Relevant Log Analysis</h3>
+<h4>1. Identify Relevant Event Types</h4>
 
+<p>
+After reviewing the initial alerts, I checked the available Suricata event
+types between the Ubuntu GUI and Ubuntu Server. This helped identify
+additional network telemetry relevant to the MITM investigation.
+</p>
+
+<h5>🔍 Splunk Query</h5>
+
+<pre><code>index=soc_network sourcetype=suricata
+src_ip="192.168.67.130" dest_ip="192.168.67.128"
+event_type IN (alert, flow, http)
+| stats count BY event_type
+| sort - count
+</code></pre>
+<img width="1283" height="414" alt="image" src="https://github.com/user-attachments/assets/89ae72bd-51a9-46f1-a086-06b7eb7b62a7" />
+
+<blockquote>
+<strong>Finding:</strong><br>
+The selected traffic contained 31 Suricata events across alert, flow and HTTP
+event types. HTTP events will be reviewed next to correlate the application
+traffic with the MITM investigation.
+</blockquote>
+<h4>2. HTTP Events Analysis</h4>
+
+<p><strong>Query:</strong></p>
+
+<pre><code>index=soc_network sourcetype=suricata
+src_ip="192.168.67.130" dest_ip="192.168.67.128"
+event_type=http
+| table _time http.http_method http.url http.status http.redirect
+| sort _time</code></pre>
+
+<img width="1280" height="397" alt="image" src="https://github.com/user-attachments/assets/5c280e7a-ccdf-428f-93ee-6f0adf034ea4" />
+
+<h5>Findings</h5>
+
+<ul>
+  <li>2 HTTP GET requests to <code>/dvwa/</code> were observed.</li>
+  <li>Both requests returned <code>302</code> and redirected to <code>login.php</code>.</li>
+  <li>User-Agent: <code>curl/7.81.0</code>.</li>
+</ul>
+
+<p>
+  <strong>L1 Assessment:</strong>
+  HTTP activity confirms application traffic but does not independently
+  confirm ARP spoofing. Packet-level validation is required.
+</p>
