@@ -190,14 +190,11 @@ The 22 ICMP alerts were observed across an approximately
 <strong>22.61-minute</strong> time window.
 </blockquote>
 
-<h4>3. Individual Alert Review</h4>
+<h4>3. Alert Pattern Review</h4>
 
 <p>
-Finally, I reviewed the individual Suricata events in chronological order.
-This was done to verify whether the same source, destination, protocol and
-signature were repeated throughout the alert window and to understand the
-event pattern before moving to deeper investigation.
-</p>
+Finally, I reviewed the individual alert timestamps to understand how the
+ICMP events were distributed across the observed activity window.</p>
 
 <pre><code>index=soc_network sourcetype=suricata event_type=alert
 src_ip="192.168.67.130" dest_ip="192.168.67.128"
@@ -206,11 +203,11 @@ src_ip="192.168.67.130" dest_ip="192.168.67.128"
 | sort _time
 </code></pre>
 <img width="1280" height="482" alt="image" src="https://github.com/user-attachments/assets/b04e4531-7e3e-4adc-b616-52ef9f2418a9" />
-
-<p>
-The individual events showed the same source IP, destination IP, protocol and
-alert signature at multiple timestamps during the observed activity window.
-</p>
+<blockquote>
+<strong>Finding:</strong><br>
+The alerts appeared at multiple timestamps during the observed activity window,
+showing repeated ICMP activity rather than a single isolated event.
+</blockquote>
 
 <blockquote>
 <strong>🔎 Step 1 Finding:</strong><br>
