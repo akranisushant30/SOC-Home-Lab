@@ -147,11 +147,14 @@ This helped define the initial scope of the incident.
 
 <h4>1. Initial Alert Summary</h4>
 
-<p>
-I first grouped the Suricata alerts by source IP, destination IP, protocol and
-alert signature. This gave a quick overview of the main activity detected during
-the lab session.
-</p>
+<h6>SOC L1 Thinking</h6>
+
+<blockquote>
+I saw Suricata alerts on the dashboard, but I did not yet know what activity
+they represented. So I reviewed the alert details to get the basic picture of
+what was detected, which hosts were involved, what protocol was used, and how
+often the alert occurred.
+</blockquote>
 
 <pre><code>index=soc_network sourcetype=suricata event_type=alert
 | stats count BY src_ip dest_ip proto alert.signature
@@ -167,12 +170,12 @@ This confirmed that repeated ICMP communication was present between the two syst
 </blockquote>
 
 <h4>2. Timeline & Duration</h4>
+<h6>SOC L1 Thinking</h6>
 
-<p>
-After identifying the alert, I checked when the activity started and ended.
-This helps determine the incident time window and shows whether the activity
-was a short burst or continued over a longer period.
-</p>
+<blockquote>
+After identifying the alert, I now know the source, destination and type of activity. Next, I wanted to check
+when the alerts started, when they stopped, and how long the activity continued.
+</blockquote>
 
 <pre><code>index=soc_network sourcetype=suricata event_type=alert
 src_ip="192.168.67.130" dest_ip="192.168.67.128"
@@ -192,10 +195,13 @@ The 22 ICMP alerts were observed across an approximately
 
 <h4>3. Alert Pattern Review</h4>
 
-<p>
-Finally, I reviewed the individual alert timestamps to understand how the
-ICMP events were distributed across the observed activity window.</p>
+<h6>SOC L1 Thinking</h6>
 
+<blockquote>
+I found that the activity lasted for around 22.61 minutes, but I still needed to understand
+how the alerts were occurring during that time. So, I reviewed the timestamps of the
+individual alerts to see how the activity was distributed.
+</blockquote>
 <pre><code>index=soc_network sourcetype=suricata event_type=alert
 src_ip="192.168.67.130" dest_ip="192.168.67.128"
 "alert.signature"="GPL ICMP_INFO PING *NIX"
@@ -220,12 +226,14 @@ is related to the ARP spoofing / MITM simulation.
 </blockquote>
 <h3>🔎 Step 2 — Relevant Log Analysis</h3>
 <h4>1. Identify Relevant Event Types</h4>
+<h6>SOC L1 Thinking</h6>
 
-<p>
-After reviewing the initial alerts, I checked the available Suricata event
-types between the Ubuntu GUI and Ubuntu Server. This helped identify
-additional network telemetry relevant to the MITM investigation.
-</p>
+<blockquote>
+After reviewing the initial alerts, The ICMP alerts showed repeated communication between the two hosts, but they
+did not provide enough context about the overall activity. So I checked the
+other Suricata event types to see what additional network activity was recorded
+between these hosts.
+</blockquote>
 
 <h5>🔍 Splunk Query</h5>
 
@@ -240,11 +248,18 @@ event_type IN (alert, flow, http)
 <blockquote>
 <strong>Finding:</strong><br>
 The selected traffic contained 31 Suricata events across alert, flow and HTTP
-event types. HTTP events will be reviewed next to correlate the application
-traffic with the MITM investigation.
+event types. This showed that the communication between the two hosts included
+additional network activity beyond the ICMP alerts identified during triage.
 </blockquote>
 <h4>2. HTTP Events Analysis</h4>
+<h6>SOC L1 Thinking</h6>
 
+<blockquote>
+The previous finding showed that HTTP events were also present between the same
+two hosts. So, I checked the HTTP requests to understand what web communication
+was taking place during the observed activity by reviewing the HTTP method,
+requested URL, response status and redirect information.
+</blockquote>
 <p><strong>Query:</strong></p>
 
 <pre><code>index=soc_network sourcetype=suricata
@@ -265,6 +280,8 @@ event_type=http
 
 <p>
   <strong>L1 Assessment:</strong>
-  HTTP activity confirms application traffic but does not independently
-  confirm ARP spoofing. Packet-level validation is required.
+  The logs confirmed ICMP and HTTP activity between the two hosts, but they did
+not explain the cause of the observed communication. I therefore needed
+packet-level evidence to investigate whether any abnormal ARP activity was
+present.
 </p>
