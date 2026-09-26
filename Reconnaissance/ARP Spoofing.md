@@ -278,10 +278,55 @@ event_type=http
   <li>User-Agent: <code>curl/7.81.0</code>.</li>
 </ul>
 
-<p>
+ <p>
   <strong>L1 Assessment:</strong>
   The logs confirmed ICMP and HTTP activity between the two hosts, but they did
-not explain the cause of the observed communication. I therefore needed
-packet-level evidence to investigate whether any abnormal ARP activity was
-present.
+  not explain what was causing this traffic. I therefore needed packet-level
+  evidence to investigate whether any abnormal traffic was present.
 </p>
+<h4>3. Packet-Level Analysis</h4>
+
+<p>
+I reviewed the Wireshark capture for traffic between
+<code>192.168.67.130</code> and <code>192.168.67.128</code> to examine the
+network packets and identify any unusual traffic patterns.
+</p>
+
+<h5>🔍 Wireshark Filter</h5>
+
+<pre><code>ip.addr == 192.168.67.130 && ip.addr == 192.168.67.128
+</code></pre>
+</p>
+<blockquote><strong>Packet:384</strong></blockquote>
+<img width="1287" height="722" alt="image" src="https://github.com/user-attachments/assets/0a3b8a93-9561-483d-a48d-0ceccbc04b2d" />
+<p><blockquote><strong>Packet:385</strong></blockquote></p>
+<img width="1296" height="607" alt="image" src="https://github.com/user-attachments/assets/5f7d694e-7311-4aee-a9c0-25827990f578" />
+<strong>Finding:</strong><br>
+The packet capture showed repeated ICMP traffic between
+<code>192.168.67.130</code> and <code>192.168.67.128</code>.
+The same ICMP traffic was observed with different TTL values,
+including <code>64</code> and <code>63</code>. The Ethernet source and
+destination MAC addresses also changed between the captured frames while
+the IP source and destination remained the same.
+<h6>SOC L1 Thinking</h6>
+
+<blockquote>
+The packet capture showed that the IP addresses remained the same while the MAC
+addresses changed. So, I will check the ARP traffic to see which MAC address is
+mapped to each IP address.
+</blockquote>
+
+<h5>🔍 Wireshark Filter</h5>
+<p>
+Since I was looking for the IP-to-MAC mappings of the two hosts, I focused on
+ARP reply packets that show which MAC address is associated with each IP address.
+</p>
+<pre><code>arp.opcode == 2 && (arp.src.proto_ipv4 == 192.168.67.128 || arp.src.proto_ipv4 == 192.168.67.130)
+</code></pre>
+<img width="1255" height="432" alt="image" src="https://github.com/user-attachments/assets/52e5f40d-4f85-4e73-ab9e-d85340a2fa3c" />
+<strong>Finding:</strong><br>
+The ARP traffic showed conflicting IP-to-MAC mappings. The IP address
+<code>192.168.67.128</code> was observed being mapped to both
+<code>00:0c:29:c1:0b:e4</code> and <code>00:0c:29:2e:03:d3</code>.
+Similarly, <code>192.168.67.130</code> was mapped to both
+<code>00:0c:29:b3:d8:ab</code> and <code>00:0c:29:2e:03:d3</code>.
