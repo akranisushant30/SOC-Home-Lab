@@ -330,3 +330,32 @@ The ARP traffic showed conflicting IP-to-MAC mappings. The IP address
 <code>00:0c:29:c1:0b:e4</code> and <code>00:0c:29:2e:03:d3</code>.
 Similarly, <code>192.168.67.130</code> was mapped to both
 <code>00:0c:29:b3:d8:ab</code> and <code>00:0c:29:2e:03:d3</code>.
+<h6>SOC L1 Thinking</h6>
+
+<blockquote>
+The ARP traffic showed conflicting IP-to-MAC mappings involving the same MAC
+address. So, I will check which IP addresses this MAC address is advertising.
+</blockquote>
+
+<h5>🔍 Wireshark Filter</h5>
+
+<pre><code>arp.opcode == 2 && arp.src.hw_mac == 00:0c:29:2e:03:d3
+</code></pre>
+
+<img width="1279" height="544" alt="image" src="https://github.com/user-attachments/assets/83478fe3-92e2-47e1-b001-9fcb745baac0" />
+
+<strong>Finding:</strong><br>
+The ARP replies from MAC address <code>00:0c:29:2e:03:d3</code> showed that
+the same MAC address was reported for three IP addresses:
+<code>192.168.67.128</code>, <code>192.168.67.129</code> and
+<code>192.168.67.130</code>.
+
+<h4>4. Identify the Unknown IP</h4>
+<h6>SOC L1 Thinking</h6>
+
+<blockquote>
+The same MAC address was reported for three IP addresses. Since
+<code>192.168.67.128</code> and <code>192.168.67.130</code> are known assets,
+I will investigate <code>192.168.67.129</code> to identify the device using
+this IP address.
+</blockquote>
