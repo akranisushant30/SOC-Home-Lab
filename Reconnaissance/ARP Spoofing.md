@@ -350,12 +350,55 @@ the same MAC address was reported for three IP addresses:
 <code>192.168.67.128</code>, <code>192.168.67.129</code> and
 <code>192.168.67.130</code>.
 
-<h4>4. Identify the Unknown IP</h4>
+<h4>4. Identify the Devices Behind the ARP Anomaly</h4>
 <h6>SOC L1 Thinking</h6>
 
 <blockquote>
-The same MAC address was reported for three IP addresses. Since
-<code>192.168.67.128</code> and <code>192.168.67.130</code> are known assets,
-I will investigate <code>192.168.67.129</code> to identify the device using
-this IP address.
+The same MAC address was reported for three different IP addresses. I will
+identify the devices associated with all three IP addresses to understand which
+hosts are involved in the conflicting ARP mappings.
+</blockquote>
+<img width="1043" height="494" alt="Screenshot 2026-09-29 170142" src="https://github.com/user-attachments/assets/2d582fdd-9340-4e2e-b6b0-2349402ca530" />
+<p><strong>Finding:</strong></p>
+
+<p>
+The three IP addresses involved in the ARP anomaly were profiled to identify
+their associated host characteristics and exposed services.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>IP Address</th>
+      <th>MAC Address</th>
+      <th>Host / Service Profile</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>192.168.67.128</code></td>
+      <td><code>00:0C:29:C1:0B:E4</code></td>
+      <td>Ubuntu Linux — SSH, HTTP</td>
+    </tr>
+    <tr>
+      <td><code>192.168.67.129</code></td>
+      <td><code>00:0C:29:2E:03:D3</code></td>
+      <td>Linux — SSH</td>
+    </tr>
+    <tr>
+      <td><code>192.168.67.130</code></td>
+      <td><code>00:0C:29:B3:D8:AB</code></td>
+      <td>Splunk Host — HTTP/HTTPS</td>
+    </tr>
+  </tbody>
+</table>
+<h3>🔗 Step 3 — Correlation &amp; Impact</h3>
+
+<h6>SOC L1 Thinking</h6>
+
+<blockquote>
+Was <code>192.168.67.129</code> active during the same time window when the
+suspicious communication between <code>192.168.67.128</code> and
+<code>192.168.67.130</code> was observed, and does its activity correlate with
+the ARP anomaly?
 </blockquote>
