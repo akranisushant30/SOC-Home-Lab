@@ -442,3 +442,53 @@ communicating with both <code>192.168.67.128</code> and
     </tr>
   </tbody>
 </table>
+<h4>2-Traffic-path evidence</h4>
+<h6>SOC L1 Thinking</h6>
+
+<blockquote>
+In <strong>Step 2 — Device Identification</strong>, the MAC address
+<code>00:0c:29:2e:03:d3</code> was identified as belonging to
+<code>192.168.67.129</code>. In <strong>Step 3.1 — Time Correlation</strong>,
+<code>192.168.67.129</code> was observed communicating with both
+<code>192.168.67.128</code> and <code>192.168.67.130</code> during the same
+captured activity window. I now need to verify whether this same MAC address
+is present in the actual <code>192.168.67.128</code> ↔
+<code>192.168.67.130</code> traffic to determine whether
+<code>192.168.67.129</code> was involved in the traffic path.
+</blockquote>
+<p><strong>Wireshark Filter:</strong></p>
+
+<pre><code>eth.src == 00:0c:29:2e:03:d3 && ((ip.src == 192.168.67.128 && ip.dst == 192.168.67.130) ||
+  (ip.src == 192.168.67.130 && ip.dst == 192.168.67.128))</code></pre>
+
+<p>
+This filter was used to identify packets exchanged between
+<code>192.168.67.128</code> and <code>192.168.67.130</code> where the Ethernet
+source MAC address matched <code>00:0c:29:2e:03:d3</code>, the MAC address
+identified with <code>192.168.67.129</code>.
+</p>
+<img width="1842" height="831" alt="image" src="https://github.com/user-attachments/assets/e92b8651-1139-4abd-b75a-67f8d16f3cd0" />
+<p><strong>Finding:</strong></p>
+
+<p>
+The filtered traffic showed that the MAC address associated with
+<code>192.168.67.129</code> was observed as the Ethernet source in packets
+exchanged between <code>192.168.67.128</code> and <code>192.168.67.130</code>.
+This provides packet-level evidence that the <code>192.168.67.129</code> host
+was involved in the observed traffic path.
+</p>
+<h4>3 — HTTP Traffic Path Verification</h4>
+<h6>SOC L1 Thinking</h6>
+
+<blockquote>
+In <strong>Step 2 — HTTP Events Analysis</strong>, HTTP traffic between
+<code>192.168.67.130</code> and <code>192.168.67.128</code> was already observed.
+In <strong>Step 3.2 — Traffic Path Verification</strong>, the MAC address
+associated with <code>192.168.67.129</code> was observed in the actual traffic
+path between these hosts. I now need to check whether the same MAC address is
+also present in the HTTP traffic to determine whether <code>192.168.67.129</code>
+was involved in the application-layer traffic as well.
+</blockquote>
+<p><strong>Wireshark Filter:</strong></p>
+
+<pre><code>eth.src == 00:0c:29:2e:03:d3 && http && ip.addr == 192.168.67.128 && ip.addr == 192.168.67.130</code></pre>
