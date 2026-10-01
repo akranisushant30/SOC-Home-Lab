@@ -402,3 +402,43 @@ suspicious communication between <code>192.168.67.128</code> and
 <code>192.168.67.130</code> was observed, and does its activity correlate with
 the ARP anomaly?
 </blockquote>
+<h4>1 — Time Correlation</h4>
+<p><strong>Wireshark Filter:</strong></p>
+
+<pre><code>ip.addr == 192.168.67.129</code></pre>
+<img width="1845" height="886" alt="image" src="https://github.com/user-attachments/assets/40a4ad54-5327-4f1d-88ec-bc5560b05236" />
+<p><strong>Finding:</strong></p>
+
+<p>
+Filtering for <code>192.168.67.129</code> showed that the host was actively
+communicating with both <code>192.168.67.128</code> and
+<code>192.168.67.130</code> during the captured activity window.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Frame</th>
+      <th>Source</th>
+      <th>Destination</th>
+      <th>Protocol</th>
+      <th>Arrival Time (IST)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>166</td>
+      <td><code>192.168.67.129</code></td>
+      <td><code>192.168.67.130</code></td>
+      <td>UDP</td>
+      <td>17:55:39.808721</td>
+    </tr>
+    <tr>
+      <td>190</td>
+      <td><code>192.168.67.129</code></td>
+      <td><code>192.168.67.128</code></td>
+      <td>UDP</td>
+      <td>17:56:02.836750</td>
+    </tr>
+  </tbody>
+</table>
