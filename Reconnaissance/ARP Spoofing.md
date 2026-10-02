@@ -492,3 +492,82 @@ was involved in the application-layer traffic as well.
 <p><strong>Wireshark Filter:</strong></p>
 
 <pre><code>eth.src == 00:0c:29:2e:03:d3 && http && ip.addr == 192.168.67.128 && ip.addr == 192.168.67.130</code></pre>
+<img width="1838" height="292" alt="image" src="https://github.com/user-attachments/assets/4102b00e-2f04-47ff-9b5d-fdc4bcfcf1c9" />
+<p><strong>Result:</strong> No packets were returned.</p>
+
+<p>
+Since the MAC address was not observed as the Ethernet source in the HTTP traffic,
+I broadened the filter to review the HTTP communication between the two hosts.
+</p>
+<p><strong>Wireshark Filter:</strong></p>
+<pre><code>http &amp;&amp; ip.addr == 192.168.67.128 &amp;&amp; ip.addr == 192.168.67.130</code></pre>
+
+<img width="1846" height="639" alt="image" src="https://github.com/user-attachments/assets/765570e2-7a87-4343-bd55-4e472a19a57f" />
+<img width="1825" height="599" alt="image" src="https://github.com/user-attachments/assets/76e888bb-86bd-4d21-a040-85c25e469469" />
+<p>
+Inspection of the <strong>Ethernet II</strong> headers showed that the destination MAC
+address in both packets was <code>00:0c:29:2e:03:d3</code>, the MAC address associated
+with <code>192.168.67.129</code>.
+</p>
+
+<p><strong>Finding:</strong></p>
+
+<p>
+The MAC address associated with <code>192.168.67.129</code> was observed as the
+<strong>Ethernet destination</strong> for HTTP traffic exchanged between
+<code>192.168.67.130</code> and <code>192.168.67.128</code>. This provides additional
+packet-level evidence that <code>192.168.67.129</code> was present in the
+Layer-2 traffic path.
+</p>
+<h3>⚖️ Step 4 — TP/FP, Severity and MITRE Mapping</h3>
+
+<p>Based on the findings from the previous steps, the alert was assessed to decide whether it was a True Positive or False Positive, determine its severity, and map it to MITRE ATT&amp;CK.</p>
+
+<h4>4.1 TP / FP Assessment</h4>
+
+<p><strong>Result: True Positive (TP)</strong></p>
+
+<ul>
+  <li>Different MAC addresses were found for the same IP addresses in ARP replies.</li>
+  <li>The MAC address of <code>192.168.67.129</code> was seen for multiple IP addresses.</li>
+  <li><code>192.168.67.129</code> was communicating with both <code>192.168.67.128</code> and <code>192.168.67.130</code>.</li>
+  <li>The <code>.129</code> MAC address was seen in the traffic path between <code>.128</code> and <code>.130</code>.</li>
+  <li>The same MAC address was also seen in the HTTP traffic between the two hosts.</li>
+</ul>
+
+<p>These findings support that the alert was related to ARP spoofing / Man-in-the-Middle activity.</p>
+
+<h4>4.2 Severity Assessment</h4>
+
+<p><strong>Severity: Medium</strong></p>
+
+<p>ARP spoofing was confirmed in the lab network and traffic between the affected hosts was observed. However, no evidence of credential theft, data modification, or confirmed data theft was found.</p>
+
+<h4>4.3 MITRE ATT&amp;CK Mapping</h4>
+
+<table>
+  <tr>
+    <th>Technique</th>
+    <th>MITRE ATT&amp;CK ID</th>
+    <th>Reason</th>
+  </tr>
+  <tr>
+    <td>Adversary-in-the-Middle: ARP Cache Poisoning</td>
+    <td><strong>T1557.002</strong></td>
+    <td>Conflicting ARP mappings and the attacker MAC appearing in the traffic path support ARP cache poisoning.</td>
+  </tr>
+</table>
+<h3>🚨 Step 5 — Action</h3>
+
+<p>Since the alert was assessed as a <strong>True Positive</strong> with <strong>Medium severity</strong>, the case was escalated to the L2 team for further investigation.</p>
+
+<h4>5.1 L1 Action</h4>
+
+<ul>
+  <li><strong>Disposition:</strong> Escalated to L2</li>
+  <li><strong>Reason:</strong> Evidence supports ARP spoofing / ARP cache poisoning involving <code>192.168.67.129</code>.</li>
+  <li><strong>Severity:</strong> Medium</li>
+  <li><strong>MITRE ATT&amp;CK:</strong> T1557.002 — ARP Cache Poisoning</li>
+</ul>
+
+<p><strong>L1 Conclusion:</strong> The alert was treated as a True Positive and escalated to L2 for further investigation and response.</p>
