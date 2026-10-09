@@ -25,3 +25,33 @@ The alert indicates a potentially suspicious email, but I need to understand the
 <blockquote>
 <strong>Step 1 Finding:</strong> The email was sent from <strong>aaronluo@cmail.carleton.ca</strong> to <strong>mark@letsdefend.io</strong> with the subject "COVID19 Vaccine". The message urges the recipient to open it and includes a password-protected attachment. These details make the email suspicious and require further investigation.
 </blockquote>
+<h3>🔎 Step 2 — Relevant Log Analysis</h3>
+
+<h6>SOC L1 Thinking</h6>
+
+<blockquote>
+The email contains suspicious content and a password-protected attachment. I will review the related Exchange logs to check whether the sender's network activity matches the email details.
+</blockquote>
+<h4>1. Exchange Log Analysis</h4>
+
+<p>Log Management returned an Exchange event showing communication from the sender IP to the mail server.</p>
+<img width="1545" height="544" alt="image" src="https://github.com/user-attachments/assets/8721bb5c-ec86-49fc-b7db-33610d7542cc" />
+
+<ul>
+  <li><strong>Source IP:</strong> 189.162.189.159</li>
+  <li><strong>Source Port:</strong> 49371</li>
+  <li><strong>Destination IP:</strong> 172.16.20.3</li>
+  <li><strong>Destination Port:</strong> 25 (SMTP)</li>
+  <li><strong>Event Time:</strong> 2021-03-21 14:36:51</li>
+</ul>
+
+<blockquote>
+<strong>Finding:</strong> The Exchange log shows SMTP communication from 189.162.189.159 to the mail server at 172.16.20.3. The source IP matches the sender IP in Mail Security, but the timestamps differ, so this log alone does not confirm the exact email transaction.
+</blockquote>
+<h3>🔗 Step 3 — Evidence Correlation & Impact Check</h3>
+
+<h6>SOC L1 Thinking</h6>
+
+<blockquote>
+The email contains suspicious content and a password-protected attachment. I will check the attachment's reputation and correlate the results with the email findings to determine whether it is potentially malicious.
+</blockquote>
