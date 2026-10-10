@@ -76,9 +76,8 @@ The email contains suspicious content and a password-protected attachment. I wil
 The attachment was flagged as malicious by multiple security vendors, and the email was blocked before delivery. I will assess the alert using the available evidence, determine what can be concluded, and document any unverified activity separately.
 </blockquote>
 <h4>1. Alert Assessment</h4>
-<img width="1590" height="557" alt="image" src="https://github.com/user-attachments/assets/680fcfce-d644-4636-807b-0cf9625d483f" />
+<img width="1323" height="537" alt="image" src="https://github.com/user-attachments/assets/59bf6f0e-cb2a-4228-beb5-730462768968" />
 <h4>2. MITRE ATT&amp;CK Mapping</h4>
-
 <ul>
   <li><strong>Tactic:</strong> Initial Access</li>
   <li><strong>Technique:</strong> Phishing (T1566)</li>
@@ -97,9 +96,9 @@ The email was blocked before delivery, and VirusTotal detections support the mal
 <h6>SOC L1 Thinking</h6>
 
 <blockquote>
-The email was blocked before delivery. I will document the findings and recommend a review of the alert's final classification.
+The email was blocked before delivery. I will document the investigation findings and confirm the alert outcome.
 </blockquote>
 
 <blockquote>
-<strong>Final Action:</strong> The investigation findings were documented, and the alert was recommended for further review due to the malicious attachment detections.
+<strong>Final Action:</strong> The alert was classified as a True Positive. The email was blocked before reaching the recipient, preventing delivery of the malicious attachment.
 </blockquote>
