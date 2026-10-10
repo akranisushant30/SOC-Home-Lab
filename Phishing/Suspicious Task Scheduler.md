@@ -55,3 +55,51 @@ The email contains suspicious content and a password-protected attachment. I wil
 <blockquote>
 The email contains suspicious content and a password-protected attachment. I will check the attachment's reputation and correlate the results with the email findings to determine whether it is potentially malicious.
 </blockquote>
+<h4>1. VirusTotal — Attachment Detection</h4>
+
+<p>The email attachment was analyzed using VirusTotal to review its detection results.</p>
+
+<img width="1881" height="938" alt="image" src="https://github.com/user-attachments/assets/1d1fba03-b730-499d-9f6b-ff770f1723e1" />
+<ul>
+  <li><strong>File Type:</strong> PDF</li>
+  <li><strong>Threat Categories:</strong> Trojan, Downloader, Phishing/Fraud</li>
+  <li><strong>Detection Results:</strong> Multiple security vendors flagged the attachment as malicious.</li>
+</ul>
+<blockquote>
+<strong>Step 3 Finding:</strong> VirusTotal analysis showed that multiple security vendors detected the attachment as malicious, with classifications including Trojan, Downloader, and Phishing/Fraud.
+</blockquote>
+<h3>⚖️ Step 4 — Assessment & MITRE Mapping</h3>
+
+<h6>SOC L1 Thinking</h6>
+
+<blockquote>
+The attachment was flagged as malicious by multiple security vendors, and the email was blocked before delivery. I will assess the alert using the available evidence, determine what can be concluded, and document any unverified activity separately.
+</blockquote>
+<h4>1. Alert Assessment</h4>
+<img width="1590" height="557" alt="image" src="https://github.com/user-attachments/assets/680fcfce-d644-4636-807b-0cf9625d483f" />
+<h4>2. MITRE ATT&amp;CK Mapping</h4>
+
+<ul>
+  <li><strong>Tactic:</strong> Initial Access</li>
+  <li><strong>Technique:</strong> Phishing (T1566)</li>
+</ul>
+
+<p>The email and attachment are consistent with a phishing attempt. However, the available evidence does not confirm scheduled task creation or execution on the recipient's system.</p>
+
+<h4>3. Assessment Summary</h4>
+<img width="1422" height="200" alt="image" src="https://github.com/user-attachments/assets/a25fefb8-6371-404c-acb1-7514c6c6ce2e" />
+
+<blockquote>
+The email was blocked before delivery, and VirusTotal detections support the malicious classification of the attachment. LetsDefend recorded the final result as False Positive, but the reason for that classification could not be verified from the available evidence.
+</blockquote>
+<h3>🛡️ Step 5 — Action</h3>
+
+<h6>SOC L1 Thinking</h6>
+
+<blockquote>
+The email was blocked before delivery. I will document the findings and recommend a review of the alert's final classification.
+</blockquote>
+
+<blockquote>
+<strong>Final Action:</strong> The investigation findings were documented, and the alert was recommended for further review due to the malicious attachment detections.
+</blockquote>
