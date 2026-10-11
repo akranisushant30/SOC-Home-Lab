@@ -1,4 +1,4 @@
-<img width="1314" height="580" alt="image" src="https://github.com/user-attachments/assets/82a5bc59-547a-416a-9e3d-2646c094bf8b" /><h2>🔎 Investigation Phase</h2>
+<h2>🔎 Investigation Phase</h2>
 
 <p>A <strong>Medium-severity phishing email alert</strong> was generated for an internal email sent from <strong>john@letsdefend.io</strong> to <strong>susie@letsdefend.io</strong> with the subject <strong>Meeting</strong>. The alert was triggered by <strong>SOC120 - Phishing Mail Detected - Internal to Internal</strong>, and the device action was recorded as <strong>Allowed</strong>.</p>
 
