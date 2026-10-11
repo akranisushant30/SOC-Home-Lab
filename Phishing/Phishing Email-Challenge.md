@@ -13,3 +13,6 @@
 <img width="1882" height="509" alt="image" src="https://github.com/user-attachments/assets/8ea69f79-25e1-45be-97cf-c700a0c0cf45" />
 <h4>4.What is the sender IP address listed in the Received-SPF header?</h4>
 <img width="935" height="102" alt="image" src="https://github.com/user-attachments/assets/d792658e-7f21-40d6-93cb-927f0cc58f94" />
+
+<h2>Badge Name: Phishing Analyzer</h2>
+https://app.letsdefend.io/my-rewards/detail/633a1bec718143edbd5053853401233a
