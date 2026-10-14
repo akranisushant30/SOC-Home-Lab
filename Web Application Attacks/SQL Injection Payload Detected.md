@@ -52,3 +52,16 @@ I'll check the source IP's ownership and reputation, along with the available de
 <h6>Source IP Reputation Check</h6>
 <p> I'll check whether security vendors have flagged the source IP for suspicious activity.</p>
 <img width="1342" height="562" alt="image" src="https://github.com/user-attachments/assets/fa5e60a1-1f4c-4073-8a08-f6012b28af29" />
+
+<h4>Step 1 Findings</h4>
+
+<p>The source IP belongs to DigitalOcean, LLC, and multiple VirusTotal vendors flagged it as suspicious or phishing-related. The requested URL contains a SQL injection-like payload, and the device action was recorded as Allowed. At this stage, the request is suspicious, but successful exploitation has not been confirmed.</p>
+<h3>Step 2: Relevant Log Analysis</h3>
+
+<p><strong>SOC L1 Thinking:</strong> Since the source IP has been flagged as suspicious and the URL contains a SQL injection-like payload, I'll examine the HTTP request to understand what was sent to the web server.</p>
+<h4>1. Examine HTTP Traffic</h4>
+<p> Multiple firewall events show connections from <code>167.99.169.17</code> to <code>172.16.17.18:443</code> at different timestamps.</p>
+<img width="1761" height="655" alt="image" src="https://github.com/user-attachments/assets/77cca2a0-b377-45c9-a421-7136718393a1" />
+<p>I reviewed the raw HTTP logs and decoded the requested URLs to understand the inputs sent to the web server. During this review, I found multiple requests containing SQL injection-like payloads targeting the search endpoint.</p>
+<img width="1913" height="657" alt="image" src="https://github.com/user-attachments/assets/7c47d123-c0b3-4235-8496-d42c5183dfcb" />
+<p>The decoded URLs included single-quote tests, <code>OR</code> conditions, and an <code>ORDER BY</code> clause, indicating repeated SQL injection testing attempts.</p>
