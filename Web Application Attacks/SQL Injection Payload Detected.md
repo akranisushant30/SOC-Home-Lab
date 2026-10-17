@@ -65,3 +65,42 @@ I'll check the source IP's ownership and reputation, along with the available de
 <p>I reviewed the raw HTTP logs and decoded the requested URLs to understand the inputs sent to the web server. During this review, I found multiple requests containing SQL injection-like payloads targeting the search endpoint.</p>
 <img width="1913" height="657" alt="image" src="https://github.com/user-attachments/assets/7c47d123-c0b3-4235-8496-d42c5183dfcb" />
 <p>The decoded URLs included single-quote tests, <code>OR</code> conditions, and an <code>ORDER BY</code> clause, indicating repeated SQL injection testing attempts.</p>
+
+<h4>Findings</h4>
+<p>After reviewing the raw HTTP logs and decoding the requested URLs, I found multiple requests containing SQL injection-like payloads targeting the search endpoint. The requests included single quotes, <code>OR</code> conditions, and an <code>ORDER BY</code> clause. All five search requests returned HTTP 500 errors with the same response size of 948 bytes. Further investigation is needed to determine whether the attack was successful.</p>
+<h3>Step 3: Correlation &amp; Impact</h3>
+<p><strong>SOC L1 Thinking:</strong> Since multiple SQL injection-like requests were found in the HTTP logs, I'll correlate the available events and check whether the traffic was part of a planned test. I'll also investigate whether there is any evidence that the attack was successful.</p>
+
+<h4>Attack Type</h4>
+
+<p>Based on the decoded URLs, I identified the attack type as SQL Injection (SQLi).</p>
+
+<h4>Planned Test Check</h4>
+
+<p>I checked the mailbox for any emails about planned security testing but couldn't find any. The available alert details also didn't indicate that the traffic came from an attack simulation tool.</p>
+
+<h4>Traffic Direction</h4>
+
+<p>I identified the traffic direction as Internet to Company because the external source IP <code>167.99.169.17</code> was targeting the internal web server <code>172.16.17.18</code>.</p>
+
+<h4>Attack Success Check</h4>
+
+<p>I checked the Command History for any suspicious commands but didn't find anything related to the attack. I also reviewed the HTTP responses, and all five search requests returned a 500 error with the same response size.</p>
+
+<p>Based on what I found, I couldn't confirm that the SQL injection attempt was successful.</p>
+
+<h4>Step 3 Findings</h4>
+
+<p>I found multiple SQL injection attempts from an external IP, with no evidence of a planned test. I also checked Command History but found no suspicious commands. The available logs did not confirm whether the attack was successful.</p>
+
+<h3>Step 4: Assessment</h3>
+
+<blockquote><p>Based on the investigation, I classified the alert as a <strong>True Positive</strong> with <strong>High</strong> severity. Multiple SQL injection attempts were found in the HTTP logs, but no evidence confirmed successful exploitation.</p></blockquote>
+
+<p><strong>MITRE ATT&amp;CK:</strong> T1190 – Exploit Public-Facing Application</p>
+<img width="1040" height="379" alt="image" src="https://github.com/user-attachments/assets/2229e12f-b090-4c68-8507-d2174310de2c" />
+
+
+<h3>Step 5: Action</h3>
+
+<p>No Tier 2 escalation was required because the attack was from the Internet and no evidence of successful exploitation was found.</p>
