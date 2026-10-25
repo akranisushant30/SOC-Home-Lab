@@ -29,6 +29,7 @@
 <p><strong>Result:</strong> Attack Successful</p>
 <h2>⚖️ Step 4: Assessment</h2>
 <p><strong>Verdict:</strong> True Positive</p>
+<img width="1544" height="329" alt="image" src="https://github.com/user-attachments/assets/24b8f6fc-81bd-4398-82b2-3a7d003381c1" />
 <ul>
 <li><strong>Is Traffic Malicious?</strong> Yes, suspicious activity consistent with a possible IDOR attempt.</li>
 <li><strong>Attack Type:</strong> IDOR (Insecure Direct Object Reference)</li>
